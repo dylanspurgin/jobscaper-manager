@@ -1,13 +1,20 @@
 'use strict';
 
 angular.module('jobscaperManagerApp')
-  .controller('MainCtrl', function ($scope, $http, socket) {
+  .controller('MainCtrl', function ($scope, $http, $location, socket, Auth) {
     $scope.awesomeThings = [];
 
-    $http.get('/api/things').success(function(awesomeThings) {
-      $scope.awesomeThings = awesomeThings;
-      socket.syncUpdates('thing', $scope.awesomeThings);
-    });
+    if (!Auth.isLoggedIn) {
+      $location.path('/login');
+    }
+
+    if (_.has(Auth.getCurrentUser(),'organization')) {
+      $http.get('/api/organization/'+Auth.getCurrentUser().organization).success(function(organization) {
+        $scope.organization = organization;
+        socket.syncUpdates('organization', $scope.organization);
+      });
+    };
+
 
     $scope.addThing = function() {
       if($scope.newThing === '') {

@@ -11,6 +11,7 @@
 
 var _ = require('lodash');
 var Organization = require('./organization.model');
+var User = require('../user/user.model');
 
 // Get list of organizations
 //exports.index = function(req, res) {
@@ -30,10 +31,20 @@ exports.show = function (req, res) {
     if (!organization) {
       return res.status(404).send('Not Found');
     }
-    if (!organization._id===req.user.organization) {
-      return res.status(401).send('Unauthorized');
+    if (req.user) {
+      User.findById(req.user._id, function (err, user) {
+        if (err) {
+          console.log('Error finding user', req.user);
+          return res.status(404).send('Not Found');
+        }
+        if (!organization._id === req.user.organization) {
+          return res.status(401).send('Unauthorized');
+        }
+        return res.json(organization);
+      });
+    } else {
+        console.log('User not found on session');
     }
-    return res.json(organization);
   });
 };
 

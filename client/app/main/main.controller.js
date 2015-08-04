@@ -9,11 +9,12 @@ angular.module('jobscaperManagerApp')
     }
 
     if (_.has(Auth.getCurrentUser(),'organization')) {
-      $http.get('/api/organization/'+Auth.getCurrentUser().organization).success(function(organization) {
+      $http.get('/api/organizations/'+Auth.getCurrentUser().organization).success(function(organization) {
         $scope.organization = organization;
+        console.log($scope.organization);
         socket.syncUpdates('organization', $scope.organization);
       });
-    };
+    }
 
 
     $scope.addThing = function() {

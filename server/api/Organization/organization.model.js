@@ -79,6 +79,7 @@ JobSchema
   });
 
 var OrganizationSchema = new Schema({
+  name: String,
   jobs: [JobSchema],
   requestCodes: [Number] // Users attempting to gain access to an org must enter a code listed here. Remove once used.
 });

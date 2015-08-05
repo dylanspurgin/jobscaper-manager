@@ -55,9 +55,10 @@ TaskSchema
 var JobSchema = new Schema({
   name: String,
   description: String,
-  dateCreated: Date,
+  startDate: Date,
   contactName: String,
   contactPhone: String,
+  contactEmail: String,
   address1: String,
   address2: String,
   city: String,

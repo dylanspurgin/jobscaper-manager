@@ -5,12 +5,75 @@ angular.module('jobscaperManagerApp', [
   'ngResource',
   'ngSanitize',
   'btford.socket-io',
+  'restangular',
   'ui.router',
   'ui.bootstrap'
 ])
-  .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
+  .config(function ($stateProvider, $urlRouterProvider, $locationProvider, RestangularProvider, $httpProvider) {
+
+    RestangularProvider.setRestangularFields({
+      id: '_id'
+    });
+
     $urlRouterProvider
-      .otherwise('/');
+      .otherwise('/main');
+
+    $stateProvider
+      .state('app', {
+        url: '',
+        abstract: true,
+        templateUrl: 'app/main/main.html',
+        controller: 'MainController'
+      })
+      .state('app.main', {
+        url: '/main',
+        authenticate: true,
+        views: {
+          'content': {
+            templateUrl: 'app/jobs/jobs.html',
+            controller: 'JobsController'
+          }
+        }
+      })
+      .state('app.login', {
+        url: '/login',
+        views: {
+          'content': {
+            templateUrl: 'app/account/login/login.html',
+            controller: 'LoginController'
+          }
+        }
+      })
+      .state('app.signup', {
+        url: '/signup',
+        views: {
+          'content': {
+            templateUrl: 'app/account/signup/signup.html',
+            controller: 'SignupController'
+          }
+        }
+      })
+      .state('app.settings', {
+        url: '/settings',
+        authenticate: true,
+        views: {
+          'content': {
+            templateUrl: 'app/account/settings/settings.html',
+            controller: 'SettingsController',
+          }
+        }
+      })
+      .state('app.admin', {
+        url: '/admin',
+        authenticate: true,
+        views: {
+          'content': {
+            templateUrl: 'app/admin/admin.html',
+            controller: 'AdminController'
+          }
+        }
+      });
+
 
     $locationProvider.html5Mode(true);
     $httpProvider.interceptors.push('authInterceptor');
@@ -42,13 +105,15 @@ angular.module('jobscaperManagerApp', [
     };
   })
 
-  .run(function ($rootScope, $location, Auth) {
+  .run(function ($rootScope, $state, Auth, DataService) {
     // Redirect to login if route requires auth and you're not logged in
     $rootScope.$on('$stateChangeStart', function (event, next) {
       Auth.isLoggedInAsync(function(loggedIn) {
-        if (next.authenticate && !loggedIn) {
+        if (!loggedIn && next.authenticate) {
           event.preventDefault();
-          $location.path('/login');
+          $state.go('app.login');
+        } else if (loggedIn && _.has(Auth.getCurrentUser(), 'organization')) {
+          DataService.getOrgData(Auth.getCurrentUser().organization);
         }
       });
     });

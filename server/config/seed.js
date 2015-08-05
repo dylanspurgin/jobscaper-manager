@@ -16,9 +16,10 @@ Organization.find({}).remove(function() {
       {
         name: '11239 Harrold Ct',
         description: 'Quisque porttitor rutrum ultricies. Fusce vehicula ex ornare, interdum mi et, posuere nisl. Donec ornare molestie felis, eget pulvinar ligula varius id. Fusce pellentesque a massa nec blandit. Vestibulum in tincidunt nulla, a aliquet diam.',
-        dateCreated: new Date(),
+        startDate: new Date(),
         contactName: 'Jim Brown',
         contactPhone: '512 333 5533',
+        contactEmail: 'jim.brown@gmail.com',
         address1: '11239 Harrold Ct',
         address2: '',
         city: 'Austin',

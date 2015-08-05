@@ -1,0 +1,29 @@
+<div class="row">
+<accordion close-others="oneAtATime">
+  <accordion-group ng-repeat="job in organization.jobs">
+    <accordion-heading>
+      {{job.name}}
+      <div class="pull-right">{{ job.startDate | date : format : timezone}}</div>
+    </accordion-heading>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8">
+
+        </div>
+        <div class="col-md-4">
+          <address>
+            <strong>{{job.contactName}}</strong><br>
+            {{job.address1}}<br>
+            <span ng-show="job.address2.length">{{job.address2}}<br></span>
+            {{job.city}}, {{job.state}} {{job.zip}}<br>
+            <br>
+            <abbr title="Phone">P:</abbr> {{job.contactPhone}}<br>
+            <abbr title="Email">E:</abbr> <a href="mailto:#">{{job.contactEmail}}</a>
+          </address>
+
+        </div>
+      </div>
+    </div>
+  </accordion-group>
+</accordion>
+</div>

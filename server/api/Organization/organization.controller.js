@@ -21,8 +21,8 @@ var User = require('../user/user.model');
 //  });
 //};
 
-// Get a single organization
-// TODO - verify user has organization id set for requested org
+// Get a single organization and its active data graph
+// TODO - only return jobs where active=true
 exports.show = function (req, res) {
   Organization.findById(req.params.id, function (err, organization) {
     if (err) {

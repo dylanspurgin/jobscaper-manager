@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('jobscaperManagerApp')
-  .controller('SignupCtrl', function ($scope, Auth, $location, $window) {
+  .controller('SignupController', function ($scope, Auth, $location, $window) {
     $scope.user = {};
     $scope.errors = {};
 

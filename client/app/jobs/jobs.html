@@ -1,29 +1,256 @@
 <div class="row">
-<accordion close-others="oneAtATime">
-  <accordion-group ng-repeat="job in organization.jobs">
-    <accordion-heading>
-      {{job.name}}
-      <div class="pull-right">{{ job.startDate | date : format : timezone}}</div>
-    </accordion-heading>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-8">
-
+  <button class="btn btn-default pull-right" ng-click="addJob()"><span class="glyphicon glyphicon-plus btn-icon"></span>Job</button>
+  <h3>Outstanding Jobs</h3>
+</div>
+<div class="row">
+  <accordion close-others="oneAtATime">
+    <accordion-group ng-repeat="job in organization.jobs" is-open="job.open">
+      <accordion-heading>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-8">
+              <i class="glyphicon pointer icon-open-close" ng-class="{'glyphicon-chevron-down': job.open, 'glyphicon-chevron-right': !job.open}"></i>
+              <span ng-hide="job.isUnderEdit">
+                {{job.name}}
+              </span>
+              <input ng-model="findJobCopy(job).name" ng-show="job.isUnderEdit" ng-click="$event.stopPropagation()" class="form-control accordion-heading-input" id="jobName" placeholder="Job name">
+            </div>
+            <div class="col-md-4">
+              <div class="pull-right">{{ job.startDate | date : format : timezone}} <span class="label" ng-show="job.taskCount>0" ng-class="{'label-success':job.complete, 'label-default':!job.complete}">{{job.taskCompletedCount}}/{{job.taskCount}}</span></div>
+            </div>
+          </div>
         </div>
-        <div class="col-md-4">
-          <address>
-            <strong>{{job.contactName}}</strong><br>
-            {{job.address1}}<br>
-            <span ng-show="job.address2.length">{{job.address2}}<br></span>
-            {{job.city}}, {{job.state}} {{job.zip}}<br>
-            <br>
-            <abbr title="Phone">P:</abbr> {{job.contactPhone}}<br>
-            <abbr title="Email">E:</abbr> <a href="mailto:#">{{job.contactEmail}}</a>
-          </address>
+      </accordion-heading>
 
+      <div class="container-fluid" ng-hide="job.isUnderEdit">
+        <div class="row">
+
+          <div class="col-md-8">
+            <p>{{job.description}}</p>
+
+            <accordion close-others="oneAtATime">
+              <accordion-group ng-repeat="task in job.tasks" is-open="task.open">
+                <accordion-heading>
+                  <div class="container-fluid">
+                    <div class="row">
+                      <div class="col-md-8">
+                        <i class="glyphicon pointer icon-open-close" ng-class="{'glyphicon-chevron-down': task.open, 'glyphicon-chevron-right': !task.open}"></i>
+                        <span ng-click="$event.stopPropagation()">{{task.name}}</span>
+                      </div>
+                      <div class="col-md-4" ng-click="$event.stopPropagation()">
+                        <div class="pull-right">
+                          <span class="label" ng-class="{'label-success':task.complete, 'label-default':!task.complete}">{{task.subtaskCompletedCount}}/{{task.subtaskCount}}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </accordion-heading>
+
+                <p>{{task.description}}</p>
+
+                <accordion close-others="oneAtATime">
+                  <accordion-group ng-repeat="subtask in task.subTasks" is-open="subtask.open">
+                    <accordion-heading>
+                      <div class="container-fluid">
+                        <div class="row">
+                          <div class="col-md-8">
+                            <i class="glyphicon pointer icon-open-close" ng-class="{'glyphicon-chevron-down': subtask.open, 'glyphicon-chevron-right': !subtask.open}"></i>
+                            <span ng-click="$event.stopPropagation()">{{subtask.name}}</span>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="pull-right"><span class="glyphicon glyphicon-check" ng-show="subtask.complete"></span></div>
+                          </div>
+                        </div>
+                      </div>
+                    </accordion-heading>
+
+                    <p>{{subtask.description}}</p>
+
+                    <dl>
+                      <dt>Materials</dt>
+                      <dd ng-repeat="material in subtask.materials">{{material.quantity}} x {{material.name}}.</dd>
+                    </dl>
+
+                  </accordion-group>
+                </accordion>
+
+              </accordion-group>
+            </accordion>
+
+          </div>
+
+          <div class="col-md-4">
+            <button type="button" class="pull-right btn btn-default" ng-click="edit(job)">edit</button>
+            <address>
+              <strong>{{job.contactName}}</strong><br>
+              {{job.address1}}<br>
+              <span ng-show="job.address2.length">{{job.address2}}<br></span>
+              {{job.city}}, {{job.state}} {{job.zip}}<br>
+              <br>
+              <abbr title="Phone">P:</abbr> {{job.contactPhone}}<br>
+              <abbr title="Email">E:</abbr> <a href="mailto:#">{{job.contactEmail}}</a>
+            </address>
+          </div>
         </div>
       </div>
-    </div>
-  </accordion-group>
-</accordion>
+
+
+      <!-- Edit -->
+      <div class="container-fluid" ng-show="job.isUnderEdit">
+
+        <div class="row">
+
+          <div class="col-md-8">
+
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea ng-model="findJobCopy(job).description" class="form-control" id="description" rows="4"></textarea>
+            </div>
+
+
+            <div class="row">
+              <div class="col-md-12">
+                <button class="btn btn-default pull-right" ng-click="addTask(findJobCopy(job))"><span class="glyphicon glyphicon-plus btn-icon"></span>Task</button>
+                <h4>Tasks</h4>
+              </div>
+            </div>
+
+            <accordion close-others="oneAtATime">
+              <accordion-group ng-repeat="task in findJobCopy(job).tasks" is-open="task.open">
+                <accordion-heading>
+                  <div class="container-fluid">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <i class="glyphicon pointer icon-open-close" ng-class="{'glyphicon-chevron-down': task.open, 'glyphicon-chevron-right': !task.open}"></i>
+                        <input ng-model="task.name" class="form-control" id="taskName" placeholder="Task name" ng-click="$event.stopPropagation()">
+                      </div>
+                    </div>
+                  </div>
+                </accordion-heading>
+
+                <div class="form-group">
+                  <label for="taskDescription">Description</label>
+                  <textarea ng-model="task.description" class="form-control" id="taskDescription" rows="4"></textarea>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <button class="btn btn-default pull-right" ng-click="addSubTask(task)"><span class="glyphicon glyphicon-plus btn-icon"></span>Subtask</button>
+                    <h5>Subtasks</h5>
+                  </div>
+                </div>
+                <accordion close-others="oneAtATime">
+                  <accordion-group ng-repeat="subtask in task.subTasks" is-open="subtask.open">
+                    <accordion-heading>
+                      <div class="container-fluid">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <i class="glyphicon pointer icon-open-close" ng-class="{'glyphicon-chevron-down': subtask.open, 'glyphicon-chevron-right': !subtask.open}"></i>
+                            <input ng-model="subtask.name" class="form-control" placeholder="Subtask name" ng-click="$event.stopPropagation()">
+                          </div>
+                        </div>
+                      </div>
+                    </accordion-heading>
+
+                    <div class="pull-right">Complete <span class="glyphicon pointer" ng-class="{'glyphicon-check': subtask.complete, 'glyphicon-unchecked': !subtask.complete}" ng-click="subtask.complete = !subtask.complete; $event.stopPropagation()"></span></div>
+
+                    <div class="form-group">
+                      <label for="subtaskDescription">Description</label>
+                      <textarea ng-model="subtask.description" class="form-control" id="subtaskDescription" rows="4"></textarea>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="panel panel-default">
+                          <button class="btn btn-default btn-add-material pull-right" ng-click="subtask.addMaterial()"><span class="glyphicon glyphicon-plus btn-icon"></span>Material</button>
+                          <div class="panel-heading">Materials</div>
+                          <div class="panel-body">
+                            <dl>
+                              <dd ng-repeat="material in subtask.materials" class="form-inline">
+                                <div class="form-group">
+                                  <label for="materialQuantity">Quantity</label>
+                                  <input ng-model="material.quantity" class="form-control" id="materialQuantity" placeholder="Quantity">
+                                </div>
+                                <div class="form-group">
+                                  <label for="materialName">Material</label>
+                                  <input ng-model="material.name" class="form-control" id="materialName" placeholder="Material">
+                                </div>
+                              </dd>
+                            </dl>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </accordion-group>
+                </accordion>
+
+              </accordion-group>
+            </accordion>
+
+
+          </div>
+
+          <div class="col-md-4">
+            <div class="pull-right">
+              <button type="button" class="btn btn-default" ng-click="save(job)">Save</button>
+              <a ng-click="cancel(job)">Cancel</a>
+            </div>
+
+            <div class="clearfix"></div>
+            <div class="form-group">
+              <label for="startDate">Start date</label>
+              <p class="input-group">
+                <input ng-model="findJobCopy(job).startDate" type="text" id="startDate" class="form-control" datepicker-popup="{{datePickerFormat}}" datepicker-options="dateOptions" is-open="datePickerOpen" min-date="'2015-01-01'" max-date="'2020-06-22'" ng-required="true" close-text="Close" />
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="openDatePicker()"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
+              </p>
+            </div>
+
+            <div class="form-group ">
+              <label for="name">Name</label>
+              <input ng-model="findJobCopy(job).contactName" class="form-control" id="name" placeholder="Name">
+            </div>
+
+            <div class="form-group">
+              <label for="address1">Address 1</label>
+              <input ng-model="findJobCopy(job).address1" class="form-control" id="address1" placeholder="Address">
+            </div>
+
+            <div class="form-group">
+              <label for="address2">Address 2</label>
+              <input ng-model="findJobCopy(job).address2" class="form-control" id="address2" placeholder="Address 2">
+            </div>
+
+            <div class="form-group">
+              <label for="city">City</label>
+              <input ng-model="findJobCopy(job).city" class="form-control" id="city" placeholder="City">
+            </div>
+
+            <div class="form-group">
+              <label for="state">State</label>
+              <input ng-model="findJobCopy(job).state" class="form-control" id="state" placeholder="State">
+            </div>
+
+            <div class="form-group">
+              <label for="zip">Zip</label>
+              <input ng-model="findJobCopy(job).zip" class="form-control" id="zip" placeholder="Zip">
+            </div>
+
+            <div class="form-group">
+              <label for="contactPhone">Phone number</label>
+              <input ng-model="findJobCopy(job).contactPhone" class="form-control" id="contactPhone" placeholder="Name">
+            </div>
+
+            <div class="form-group">
+              <label for="contactEmail">Email</label>
+              <input ng-model="findJobCopy(job).contactEmail" class="form-control" id="contactEmail" placeholder="Name">
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </accordion-group>
+  </accordion>
 </div>

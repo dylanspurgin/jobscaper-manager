@@ -1,7 +1,8 @@
 'use strict';
 
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+  Schema = mongoose.Schema,
+  _ = require('lodash');
 
 
 //var childSchema = new Schema({ name: 'string' });
@@ -33,23 +34,28 @@ var TaskSchema = new Schema({
   subTasks: [SubTaskSchema]
 });
 
-TaskSchema
-  .virtual('complete')
-  .get(function() {
-    return  _.where(this.subTasks, {complete: true}).length === this.subTasks.length;
+TaskSchema.set('toJSON', {
+  virtuals: true
 });
 
 TaskSchema
-  .virtual('subTasksCompleteCount')
-  .get(function() {
+  .virtual('complete')
+  .get(function () {
+    return _.where(this.subTasks, {complete: true}).length === this.subTasks.length;
+  });
+
+TaskSchema
+  .virtual('subtaskCompletedCount')
+  .get(function () {
     return _.where(this.subTasks, {complete: true}).length;
   });
 
 TaskSchema
-  .virtual('subTaskCount')
-  .get(function() {
+  .virtual('subtaskCount')
+  .get(function () {
     return this.subTasks.length;
   });
+
 
 
 var JobSchema = new Schema({
@@ -69,14 +75,26 @@ var JobSchema = new Schema({
   tasks: [TaskSchema]
 });
 
+JobSchema.set('toJSON', {
+  virtuals: true
+});
+
 JobSchema
-  .virtual('status')
-  .get(function() {
-    return {
-      complete: _.where(this.tasks, {complete: true}).length === this.subTasks.length,
-      numberCompleted: _.where(this.tasks, {complete: true}).length,
-      numberTotal: this.tasks.length
-    };
+  .virtual('complete')
+  .get(function () {
+    return _.where(this.tasks, {complete: true}).length === this.tasks.length;
+  });
+
+JobSchema
+  .virtual('taskCompletedCount')
+  .get(function () {
+    return _.where(this.tasks, {complete: true}).length;
+  });
+
+JobSchema
+  .virtual('taskCount')
+  .get(function () {
+    return this.tasks.length;
   });
 
 var OrganizationSchema = new Schema({

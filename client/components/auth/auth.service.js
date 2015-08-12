@@ -3,11 +3,13 @@
 angular.module('jobscaperManagerApp')
   .factory('Auth', function Auth($location, $rootScope, $http, User, $cookieStore, $q, Restangular) {
 
-    var currentUser = {},
+    var _currentUser = {},
       _loginEndpoint = '/auth/local';
 
     if ($cookieStore.get('token')) {
-      currentUser = User.get();
+      User.get().then(function(user) {
+        _.merge(_currentUser,user);
+      });
     }
 
     return {
@@ -26,7 +28,10 @@ angular.module('jobscaperManagerApp')
         })
           .then(function (response) {
             $cookieStore.put('token', response.token);
-            currentUser = User.get();
+            User.get().then(function(user) {
+              _.merge(_currentUser,user);
+              $rootScope.$broadcast('login');
+            });
             deferred.resolve(response);
           })
           .catch(function (err) {
@@ -44,12 +49,12 @@ angular.module('jobscaperManagerApp')
        */
       logout: function () {
         $cookieStore.remove('token');
-        currentUser = {};
+        _currentUser.length = 0;
       },
 
       /**
        * Create a new user
-       * TODO - refactor to user Restangular
+       * TODO - refactor to use Restangular
        *
        * @param  {Object}   user     - user info
        * @param  {Function} callback - optional
@@ -61,7 +66,9 @@ angular.module('jobscaperManagerApp')
         return User.save(user,
           function (data) {
             $cookieStore.put('token', data.token);
-            currentUser = User.get();
+            User.get().then(function(user) {
+              _.merge(_currentUser,user);
+            });
             return cb(user);
           },
           function (err) {
@@ -72,7 +79,7 @@ angular.module('jobscaperManagerApp')
 
       /**
        * Change password
-       * TODO - refactor to user Restangular
+       * TODO - refactor to use Restangular
        *
        * @param  {String}   oldPassword
        * @param  {String}   newPassword
@@ -82,7 +89,7 @@ angular.module('jobscaperManagerApp')
       changePassword: function (oldPassword, newPassword, callback) {
         var cb = callback || angular.noop;
 
-        return User.changePassword({id: currentUser._id}, {
+        return User.changePassword({id: _currentUser._id}, {
           oldPassword: oldPassword,
           newPassword: newPassword
         }, function (user) {
@@ -92,14 +99,16 @@ angular.module('jobscaperManagerApp')
         }).$promise;
       },
 
-      /**
-       * Gets all available info on authenticated user
-       *
-       * @return {Object} user
-       */
-      getCurrentUser: function () {
-        return currentUser;
-      },
+      ///**
+      // * Gets all available info on authenticated user
+      // *
+      // * @return {Object} user
+      // */
+      //getCurrentUser: function () {
+      //  return currentUser;
+      //},
+      //
+      currentUser: _currentUser,
 
       /**
        * Check if a user is logged in
@@ -107,20 +116,22 @@ angular.module('jobscaperManagerApp')
        * @return {Boolean}
        */
       isLoggedIn: function () {
-        return currentUser.hasOwnProperty('role');
+        return _currentUser.hasOwnProperty('role');
       },
 
       /**
        * Waits for currentUser to resolve before checking if user is logged in
        */
-      isLoggedInAsync: function (cb) {
-        currentUser
+      isLoggedInAsync: function () {
+        var deferred = $q.defer();
+        User.get()
           .then(function (user) {
-            cb(user.hasOwnProperty('role'));
+            deferred.resolve(user.hasOwnProperty('role'));
           })
           .catch(function () {
-            cb(false);
+            deferred.resolve(false);
           });
+        return deferred.promise;
       },
 
       /**
@@ -129,7 +140,7 @@ angular.module('jobscaperManagerApp')
        * @return {Boolean}
        */
       isAdmin: function () {
-        return currentUser.role === 'admin';
+        return _currentUser.role === 'admin';
       },
 
       /**

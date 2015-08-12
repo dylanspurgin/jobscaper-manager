@@ -91,8 +91,8 @@ angular.module('jobscaperManagerApp', [
       },
 
       // Intercept 401s and redirect you to login
-      responseError: function(response) {
-        if(response.status === 401) {
+      responseError: function (response) {
+        if (response.status === 401) {
           $location.path('/login');
           // remove any stale tokens
           $cookieStore.remove('token');
@@ -105,16 +105,20 @@ angular.module('jobscaperManagerApp', [
     };
   })
 
-  .run(function ($rootScope, $state, Auth, DataService) {
+  .run(function ($rootScope, $state, Auth) {
     // Redirect to login if route requires auth and you're not logged in
     $rootScope.$on('$stateChangeStart', function (event, next) {
-      Auth.isLoggedInAsync(function(loggedIn) {
-        if (!loggedIn && next.authenticate) {
+      Auth.isLoggedInAsync()
+        .then(function (isLoggedIn) {
+          if (!isLoggedIn && next.authenticate) {
+            console.log('not logged in, going to login state');
+            event.preventDefault();
+            $state.go('app.login');
+          }
+        })
+        .catch(function () {
           event.preventDefault();
           $state.go('app.login');
-        } else if (loggedIn && _.has(Auth.getCurrentUser(), 'organization')) {
-          DataService.getOrgData(Auth.getCurrentUser().organization);
-        }
-      });
+        });
     });
   });

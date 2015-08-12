@@ -1,43 +1,31 @@
 'use strict';
 
 angular.module('jobscaperManagerApp')
-  .controller('MainController', function ($scope, $location, socket, Auth, DataService, $state, $log) {
-
-    if (!Auth.isLoggedIn) {
-      $state.go('app.login');
-    }
-
-    var fetchOrgData = function () {
-      Auth.getCurrentUser()
-        .then(function (currentUser) {
-          DataService.getOrgData(currentUser.organization)
-            .then(function (organization) {
-              console.log('organization', organization);
-              $scope.organization = organization;
-              socket.syncUpdates('organization', $scope.organization);
-            })
-            .catch(function (err) {
-              $log.error('error getting organization data', err);
-            });
-        })
-        .catch(function (err) {
-          $log.error('Error getting current user', err);
-        });
-    };
-
-    if (_.has(Auth.getCurrentUser(), 'organization')) {
-      fetchOrgData();
-    }
+  .controller('MainController', function ($scope, $rootScope, $location, socket, Auth, DataService, $state, $log) {
 
     $scope.menu = [{
       'title': 'Home',
-      'link': '/'
+      'sref': 'app.main'
     }];
 
     $scope.isCollapsed = true;
     $scope.isLoggedIn = Auth.isLoggedIn;
     $scope.isAdmin = Auth.isAdmin;
-    $scope.getCurrentUser = Auth.getCurrentUser;
+    $scope.currentUser = Auth.currentUser;
+
+    var fetchData = function () {
+      if (Auth.isLoggedIn() && _.has($scope.currentUser, 'organization')) {
+        DataService.getOrgData($scope.currentUser.organization)
+          .then(function (organization) {
+            $scope.organization = organization;
+            socket.syncUpdates('api/organizations', $scope.organization);
+          })
+          .catch(function (err) {
+            $log.error('error getting organization data', err);
+          });
+      }
+    };
+
 
     $scope.logout = function () {
       Auth.logout();
@@ -45,14 +33,16 @@ angular.module('jobscaperManagerApp')
     };
 
     $scope.isActive = function (state) {
-      return state === state.current;
+      return $state.is(state);
     };
 
     $scope.$on('$destroy', function () {
       socket.unsyncUpdates('organization');
     });
 
-    $scope.$on('login', function () {
-      fetchOrgData();
-    })
+    $rootScope.$on('login', function () {
+      fetchData();
+    });
+    fetchData();
+
   });

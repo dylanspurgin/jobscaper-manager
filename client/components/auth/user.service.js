@@ -2,23 +2,6 @@
 
 angular.module('jobscaperManagerApp')
   .factory('User', function (Restangular) {
-    //return $resource('/api/users/:id/:controller', {
-    //  id: '@_id'
-    //},
-    //{
-    //  changePassword: {
-    //    method: 'PUT',
-    //    params: {
-    //      controller:'password'
-    //    }
-    //  },
-    //  get: {
-    //    method: 'GET',
-    //    params: {
-    //      id:'me'
-    //    }
-    //  }
-	 // });
 
     var
       _endpoint = '/api/users',

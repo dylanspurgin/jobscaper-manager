@@ -20,6 +20,7 @@ var session = require('express-session');
 module.exports = function(app) {
   var env = app.get('env');
   env = process.env.NODE_ENV;
+  console.log('Environment is set to ',env);
 
   app.set('views', config.root + '/server/views');
   app.engine('html', require('ejs').renderFile);

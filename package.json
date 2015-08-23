@@ -123,7 +123,7 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "start": "node server/app.js",
+    "start": "node dist/server/app.js",
     "postinstall": "bower install",
     "test": "grunt test",
     "update-webdriver": "node node_modules/grunt-protractor-runner/node_modules/protractor/bin/webdriver-manager update"

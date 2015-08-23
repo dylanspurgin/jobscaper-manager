@@ -18,6 +18,6 @@ module.exports = {
     uri:    process.env.MONGOLAB_URI ||
             process.env.MONGOHQ_URL ||
             process.env.OPENSHIFT_MONGODB_DB_URL+process.env.OPENSHIFT_APP_NAME ||
-            'mongodb://localhost/jobscapermanager'
+            'mongodb://heroku_8rfgzwt8:j4gtpfbdk21m8f2b34obklesn1@ds033153.mongolab.com:33153/heroku_8rfgzwt8'
   }
 };

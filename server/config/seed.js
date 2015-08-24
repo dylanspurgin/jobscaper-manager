@@ -62,7 +62,7 @@ Organization.find({}).remove(function() {
         name: 'Leslie Lilly',
         email: 'leslie@lonestarnatives.com',
         organization: org._id,
-        role: 'user',
+        role: 'manager',
         password: '1234',
         provider: 'local'
       }, function (err, user) {

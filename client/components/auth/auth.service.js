@@ -54,27 +54,22 @@ angular.module('jobscaperManagerApp')
 
       /**
        * Create a new user
-       * TODO - refactor to use Restangular
-       *
-       * @param  {Object}   user     - user info
-       * @param  {Function} callback - optional
+       * @param  {Object} user - user info
        * @return {Promise}
        */
-      createUser: function (user, callback) {
-        var cb = callback || angular.noop;
-
-        return User.save(user,
-          function (data) {
-            $cookieStore.put('token', data.token);
-            User.get().then(function(user) {
-              _.merge(_currentUser,user);
-            });
-            return cb(user);
-          },
-          function (err) {
+      createUser: function (user) {
+        var deferred = $q.defer();
+        User.create(user)
+          .then(function (user) {
+            $cookieStore.put('token', user.token);
+            _.merge(_currentUser,user);
+            deferred.resolve(user);
+          })
+          .catch(function (err) {
             this.logout();
-            return cb(err);
-          }.bind(this)).$promise;
+            deferred.reject(err);
+          });
+        return deferred.promise;
       },
 
       /**
@@ -135,12 +130,19 @@ angular.module('jobscaperManagerApp')
       },
 
       /**
-       * Check if a user is an admin
-       *
+       * Does the current user have the 'admin' role
        * @return {Boolean}
        */
       isAdmin: function () {
         return _currentUser.role === 'admin';
+      },
+
+      /**
+       * Does the current user have the 'manager' role
+       * @returns {boolean}
+       */
+      isManager: function () {
+        return _currentUser.role === 'manager'
       },
 
       /**

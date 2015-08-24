@@ -7,14 +7,18 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
+      <div class="navbar-icon-jobscaper"><span class="glyphicon glyphicon-ok icon-jobscaper"></span></div>
       <a href="/" class="navbar-brand">{{organization.name}}</a>
     </div>
     <div collapse="isCollapsed" class="navbar-collapse collapse" id="navbar-main">
       <ul class="nav navbar-nav">
-        <li ng-repeat="item in menu" ng-class="{active: isActive(item.sref)}">
-          <a ui-sref="{{item.sref}}">{{item.title}}</a>
+        <li ng-class="{active: isActive('app.jobs')}">
+          <a ui-sref="app.jobs">Home</a>
         </li>
-        <li ng-show="isAdmin()" ng-class="{active: isActive('admin')}"><a ui-sref="app.admin">Admin</a></li>
+        <li ng-show="isManager()" ng-class="{active: isActive('app.manage')}">
+          <a ui-sref="app.manage">Manage</a>
+        </li>
+        <li ng-show="isAdmin()" ng-class="{active: isActive('app.admin')}"><a ui-sref="app.admin">Admin</a></li>
       </ul>
 
       <ul class="nav navbar-nav navbar-right">

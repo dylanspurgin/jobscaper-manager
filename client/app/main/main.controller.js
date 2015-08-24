@@ -3,14 +3,12 @@
 angular.module('jobscaperManagerApp')
   .controller('MainController', function ($scope, $rootScope, $location, socket, Auth, DataService, $state, $log) {
 
-    $scope.menu = [{
-      'title': 'Home',
-      'sref': 'app.main'
-    }];
+    $scope.menu = [];
 
     $scope.isCollapsed = true;
     $scope.isLoggedIn = Auth.isLoggedIn;
     $scope.isAdmin = Auth.isAdmin;
+    $scope.isManager = Auth.isManager;
     $scope.currentUser = Auth.currentUser;
 
     var fetchData = function () {
@@ -43,6 +41,12 @@ angular.module('jobscaperManagerApp')
     $rootScope.$on('login', function () {
       fetchData();
     });
-    fetchData();
+
+
+    var init = function () {
+      fetchData();
+    };
+
+    init();
 
   });

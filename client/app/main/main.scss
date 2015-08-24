@@ -29,6 +29,27 @@
   margin: 6px;
 }
 
+.btn-row-anchor {
+  margin: auto 10px;
+  cursor: pointer;
+}
+
 .btn-icon {
   margin-right: 6px;
+}
+
+.navbar-icon-jobscaper {
+  padding: 9px;
+  float: left;
+  font-size: 18px;
+  line-height: 20px;
+  height: 50px;
+}
+
+.icon-jobscaper {
+  color: $color1;
+  border: solid 3px $color1;
+  background-color: $color5;
+  padding: 3px;
+  border-radius: 2px;
 }

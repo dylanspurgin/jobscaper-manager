@@ -16,7 +16,7 @@ angular.module('jobscaperManagerApp', [
     });
 
     $urlRouterProvider
-      .otherwise('/main');
+      .otherwise('/jobs');
 
     $stateProvider
       .state('app', {
@@ -25,8 +25,9 @@ angular.module('jobscaperManagerApp', [
         templateUrl: 'app/main/main.html',
         controller: 'MainController'
       })
-      .state('app.main', {
-        url: '/main',
+
+      .state('app.jobs', {
+        url: '/jobs',
         authenticate: true,
         views: {
           'content': {
@@ -72,6 +73,16 @@ angular.module('jobscaperManagerApp', [
             controller: 'AdminController'
           }
         }
+      })
+      .state('app.manage', {
+        url: '/manage',
+        authenticate: true,
+        views: {
+          'content': {
+            templateUrl: 'app/manage/manage.html',
+            controller: 'ManageController'
+          }
+        }
       });
 
 
@@ -79,7 +90,7 @@ angular.module('jobscaperManagerApp', [
     $httpProvider.interceptors.push('authInterceptor');
   })
 
-  .factory('authInterceptor', function ($rootScope, $q, $cookieStore, $location) {
+  .factory('authInterceptor', function ($rootScope, $q, $cookieStore, $location, $log) {
     return {
       // Add authorization token to headers
       request: function (config) {
@@ -93,6 +104,7 @@ angular.module('jobscaperManagerApp', [
       // Intercept 401s and redirect you to login
       responseError: function (response) {
         if (response.status === 401) {
+          $log.info('401 response received. Going to login state.');
           $location.path('/login');
           // remove any stale tokens
           $cookieStore.remove('token');
@@ -105,13 +117,13 @@ angular.module('jobscaperManagerApp', [
     };
   })
 
-  .run(function ($rootScope, $state, Auth) {
+  .run(function ($rootScope, $state, Auth, $log) {
     // Redirect to login if route requires auth and you're not logged in
     $rootScope.$on('$stateChangeStart', function (event, next) {
       Auth.isLoggedInAsync()
         .then(function (isLoggedIn) {
           if (!isLoggedIn && next.authenticate) {
-            console.log('not logged in, going to login state');
+            $log.info('User is not authenticated. Going to login state.');
             event.preventDefault();
             $state.go('app.login');
           }

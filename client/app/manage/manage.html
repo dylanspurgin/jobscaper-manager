@@ -1,0 +1,131 @@
+<div class="row">
+  <button class="btn btn-default pull-right" ng-click="addUser()"><span class="glyphicon glyphicon-plus btn-icon"></span>User</button>
+  <h3>User Management</h3>
+  <p>Add or remove users for your organization.</p>
+
+  <accordion close-others="oneAtATime">
+
+    <accordion-group ng-repeat="user in users" is-open="user.open">
+      <accordion-heading>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12">
+              <i class="glyphicon pointer icon-open-close" ng-class="{'glyphicon-chevron-down': user.open, 'glyphicon-chevron-right': !user.open}"></i>
+              <span ng-click="$event.stopPropagation()">{{user.name}}</span>
+            </div>
+          </div>
+        </div>
+      </accordion-heading>
+
+      <div class="container-fluid">
+
+        <div class="row" ng-hide="user.edit">
+          <div class="col-md-12">
+            <button class="btn btn-default pull-right" ng-click="user.edit = true">Edit</button>
+          </div>
+        </div>
+
+        <div class="row" ng-show="user.edit">
+          <div class="col-md-12">
+            <div class="pull-right">
+              <a ng-click="cancelEdit(user)" class="btn-row-anchor">Cancel</a>
+              <button type="button" class="btn btn-default" ng-click="user.save(); user.edit=false;">Save</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" ng-hide="user.edit">
+          <div class="col-md-12">
+
+            <dl class="dl-horizontal">
+              <dt>Email</dt>
+              <dd>{{user.email}}</dd>
+              <dt>Role</dt>
+              <dd>{{user.role}}</dd>
+              <!-- TODO - show organization when current user is admin
+              <dt ng-show="currentUser.role === 'admin'">Organization</dt>
+              <dd ng-show="currentUser.role === 'admin'">{{getOrganizationNameById(user.organization)}}</dd>
+              -->
+            </dl>
+
+          </div>
+        </div>
+
+        <div class="row" ng-show="user.edit">
+          <div class="col-md-12">
+
+            <form class="form" name="form" novalidate>
+
+              <div class="form-group" ng-class="{ 'has-success': form.name.$valid && submitted,
+                                            'has-error': form.name.$invalid && submitted }">
+                <label>Name</label>
+
+                <input type="text" name="name" class="form-control" ng-model="user.name"
+                       required/>
+                <p class="help-block" ng-show="form.name.$error.required && submitted">
+                  A name is required
+                </p>
+              </div>
+
+              <div class="form-group" ng-class="{ 'has-success': form.email.$valid && submitted,
+                                            'has-error': form.email.$invalid && submitted }">
+                <label>Email</label>
+
+                <input type="email" name="email" class="form-control" ng-model="user.email"
+                       required
+                       mongoose-error/>
+                <p class="help-block" ng-show="form.email.$error.email && submitted">
+                  Doesn't look like a valid email.
+                </p>
+                <p class="help-block" ng-show="form.email.$error.required && submitted">
+                  What's your email address?
+                </p>
+                <p class="help-block" ng-show="form.email.$error.mongoose">
+                  {{ errors.email }}
+                </p>
+              </div>
+
+              <div class="form-group" ng-class="{ 'has-success': form.password.$valid && submitted,
+                                            'has-error': form.password.$invalid && submitted }">
+                <label>Password</label>
+
+                <input type="password" name="password" class="form-control" ng-model="user.password"
+                       ng-minlength="3"
+                       required
+                       mongoose-error/>
+                <p class="help-block"
+                   ng-show="(form.password.$error.minlength || form.password.$error.required) && submitted">
+                  Password must be at least 3 characters.
+                </p>
+                <p class="help-block" ng-show="form.password.$error.mongoose">
+                  {{ errors.password }}
+                </p>
+              </div>
+
+              <div class="form-group" ng-class="{ 'has-success': form.role.$valid && submitted,
+                                            'has-error': form.role.$invalid && submitted }">
+                <label>Role</label>
+
+                <select name="role" class="form-control" ng-model="user.role" required mongoose-error>
+                  <option>user</option>
+                  <option>manager</option>
+                </select>
+                <p class="help-block"
+                   ng-show="(form.role.$error.required) && submitted">
+                  Role must be selected.
+                </p>
+                <p class="help-block" ng-show="form.role.$error.mongoose">
+                  {{ errors.role }}
+                </p>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+    </accordion-group>
+
+  </accordion>
+</div>

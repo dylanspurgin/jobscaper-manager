@@ -15,7 +15,7 @@ angular.module('jobscaperManagerApp')
         })
           .then(function () {
             // Logged in, redirect to home
-            $state.go('app.main');
+            $state.go('app.jobs');
           })
           .catch(function (err) {
             $scope.errors.other = err.message;

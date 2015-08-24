@@ -5,6 +5,7 @@ var Organization = require('../organization/organization.model');
 var passport = require('passport');
 var config = require('../../config/environment');
 var jwt = require('jsonwebtoken');
+var _ = require('lodash');
 
 var validationError = function (res, err) {
   return res.status(422).json(err);
@@ -12,13 +13,34 @@ var validationError = function (res, err) {
 
 /**
  * Get list of users
- * restriction: 'admin'
  */
 exports.index = function (req, res) {
-  User.find({}, '-salt -hashedPassword', function (err, users) {
-    if (err) return res.status(500).send(err);
-    res.status(200).json(users);
-  });
+
+  // If user's role is 'admin', get all
+  if (req.user.role === 'admin') {
+    User.find({}, '-salt -hashedPassword', function (err, users) {
+      if (err) return res.status(500).send(err);
+      res.status(200).json(users);
+    });
+
+  // If user's role is 'manager', get all for org
+  } else if (req.user.role === 'manager') {
+    User.find({organization:req.user.organization}, '-salt -hashedPassword', function (err, users) {
+      if (err) return res.status(500).send(err);
+      res.status(200).json(users);
+    });
+
+  // If user's role is 'user', get self only
+  } else if (req.user.role === 'user') {
+    User.findById(req.user._id, function (err, user) {
+      if (err) return next(err);
+      return res.status(200).json(user);
+    });
+  } else {
+    // TODO - Add proper error response here
+    return res.status(401).send({});
+  }
+
 };
 
 /**
@@ -28,7 +50,7 @@ exports.index = function (req, res) {
 exports.create = function (req, res, next) {
   var newUser = new User(req.body);
   newUser.provider = 'local';
-  newUser.role = 'user';
+  newUser.role = newUser.role || 'user';
   newUser.save(function (err, user) {
     if (err) return validationError(res, err);
     var token = jwt.sign({_id: user._id}, config.secrets.session, {expiresInMinutes: 60 * 5});
@@ -78,7 +100,7 @@ exports.update = function (req, res) {
       return res.status(404).send('Not Found');
     }
     // Validate users attempting to gain access to a new org
-    if (user.organization!==req.body.organization) {
+    if (user.organization.toString() !== req.body.organization) {
       if (!user.organizationRequestCode) {
         return res.status(400).send('Bad request. No organization request code found.');
       }

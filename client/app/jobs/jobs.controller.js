@@ -1,13 +1,13 @@
 'use strict';
 
 angular.module('jobscaperManagerApp')
-  .controller('JobsController', function ($scope, $timeout) {
+  .controller('JobsController', function ($scope, $timeout, $log) {
 
     var findJobIndex = function (job) {
       return _.findIndex($scope.organization.jobs, job);
     };
 
-    var setJobEditUnderEdit = function (job, isUnderEdit) {
+    $scope.setJobUnderEdit = function (job, isUnderEdit) {
       job.open = true;
       $scope.organization.jobs[findJobIndex(job)].isUnderEdit = isUnderEdit;
     };
@@ -16,51 +16,40 @@ angular.module('jobscaperManagerApp')
       return $scope.organization.jobsCopy[findJobIndex(job)];
     };
 
-    $scope.edit = function (job) {
-      setJobEditUnderEdit(job,true);
-    };
-
     $scope.save = function (job) {
-      _.merge($scope.organization.jobs[findJobIndex(job)],$scope.findJobCopy(job));
+      $scope.organization.jobs[findJobIndex(job)] = $scope.findJobCopy(job);
       $scope.organization.save()
-        .then(function (jobResponse) {
-
+        .then(function (/*organization*/) {
+          var job = $scope.organization.jobs[findJobIndex(job)];
+          if (job !== undefined) {
+            $scope.organization.jobs[findJobIndex(job)].open = true;
+          }
         })
-        .catch(function (err) {
+        .catch(function (/*error*/) {
           $log.error('Error saving job', job);
+          // TODO - display error modal
         })
         .finally(function () {
-          setJobEditUnderEdit(job,false);
+          $scope.setJobUnderEdit(job,false);
         });
     };
 
     $scope.cancel = function (job) {
-      setJobEditUnderEdit(job,false);
+      $scope.organization.jobsCopy[findJobIndex(job)] = $scope.organization.jobs[findJobIndex(job)];
+      $scope.setJobUnderEdit(job, false);
     };
 
-
-    $scope.addJob = function () {
-      var newJob = $scope.organization.addJob();
-      setJobEditUnderEdit(newJob,true);
-    };
-
-    $scope.addTask = function (job) {
-      job.addTask().open = true;
-    };
-
-    $scope.addSubTask = function (task) {
-      task.addSubTask().open = true;
-    };
 
     $scope.datePickerFormat = 'yyyy/MM/dd';
     $scope.dateOptions = {
       formatYear: 'yy',
       startingDay: 1
     };
-    $scope.datePickerOpen = false;
-    $scope.openDatePicker = function () {
+    //$scope.datePickerOpen = false;
+    $scope.datePickerOpen = [];
+    $scope.openDatePicker = function (index) {
       $timeout(function () {
-        $scope.datePickerOpen = true;
+        $scope.datePickerOpen[index] = true;
       });
     }
 

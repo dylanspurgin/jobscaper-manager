@@ -20,7 +20,7 @@ var MaterialSchema = new Schema({
   quantity: Number
 });
 
-var SubTaskSchema = new Schema({
+var SubtaskSchema = new Schema({
   name: String,
   description: String,
   complete: Boolean,
@@ -31,7 +31,7 @@ var SubTaskSchema = new Schema({
 var TaskSchema = new Schema({
   name: String,
   description: String,
-  subTasks: [SubTaskSchema]
+  subtasks: [SubtaskSchema]
 });
 
 TaskSchema.set('toJSON', {
@@ -41,19 +41,19 @@ TaskSchema.set('toJSON', {
 TaskSchema
   .virtual('complete')
   .get(function () {
-    return _.where(this.subTasks, {complete: true}).length === this.subTasks.length;
+    return _.where(this.subtasks, {complete: true}).length === this.subtasks.length;
   });
 
 TaskSchema
   .virtual('subtaskCompletedCount')
   .get(function () {
-    return _.where(this.subTasks, {complete: true}).length;
+    return _.where(this.subtasks, {complete: true}).length;
   });
 
 TaskSchema
   .virtual('subtaskCount')
   .get(function () {
-    return this.subTasks.length;
+    return this.subtasks.length;
   });
 
 

@@ -1,5 +1,5 @@
 <div class="row">
-  <button class="btn btn-default pull-right" ng-click="addJob()"><span class="glyphicon glyphicon-plus btn-icon"></span>Job</button>
+  <button class="btn btn-default pull-right" ng-click="setJobUnderEdit(organization.addJob(),true);"><span class="glyphicon glyphicon-plus btn-icon"></span>Job</button>
   <h3>Outstanding Jobs</h3>
 </div>
 <div class="row">
@@ -49,7 +49,7 @@
                 <p>{{task.description}}</p>
 
                 <accordion close-others="oneAtATime">
-                  <accordion-group ng-repeat="subtask in task.subTasks" is-open="subtask.open">
+                  <accordion-group ng-repeat="subtask in task.subtasks" is-open="subtask.open">
                     <accordion-heading>
                       <div class="container-fluid">
                         <div class="row">
@@ -80,7 +80,7 @@
           </div>
 
           <div class="col-md-4">
-            <button type="button" class="pull-right btn btn-default" ng-click="edit(job)">edit</button>
+            <button type="button" class="pull-right btn btn-default" ng-click="setJobUnderEdit(job,true)">edit</button>
             <address>
               <strong>{{job.contactName}}</strong><br>
               {{job.address1}}<br>
@@ -110,7 +110,7 @@
 
             <div class="row">
               <div class="col-md-12">
-                <button class="btn btn-default pull-right" ng-click="addTask(findJobCopy(job))"><span class="glyphicon glyphicon-plus btn-icon"></span>Task</button>
+                <button class="btn btn-default pull-right" ng-click="findJobCopy(job).addTask()"><span class="glyphicon glyphicon-plus btn-icon"></span>Task</button>
                 <h4>Tasks</h4>
               </div>
             </div>
@@ -120,10 +120,11 @@
                 <accordion-heading>
                   <div class="container-fluid">
                     <div class="row">
-                      <div class="col-md-12">
+                      <div class="col-md-11">
                         <i class="glyphicon pointer icon-open-close" ng-class="{'glyphicon-chevron-down': task.open, 'glyphicon-chevron-right': !task.open}"></i>
                         <input ng-model="task.name" class="form-control" id="taskName" placeholder="Task name" ng-click="$event.stopPropagation()">
                       </div>
+                      <div class="col-md-1"><span class="glyphicon glyphicon-remove pointer" ng-click="findJobCopy(job).removeTask(task)"></span></div>
                     </div>
                   </div>
                 </accordion-heading>
@@ -135,19 +136,20 @@
 
                 <div class="row">
                   <div class="col-md-12">
-                    <button class="btn btn-default pull-right" ng-click="addSubTask(task)"><span class="glyphicon glyphicon-plus btn-icon"></span>Subtask</button>
+                    <button class="btn btn-default pull-right" ng-click="task.addSubtask()"><span class="glyphicon glyphicon-plus btn-icon"></span>Subtask</button>
                     <h5>Subtasks</h5>
                   </div>
                 </div>
                 <accordion close-others="oneAtATime">
-                  <accordion-group ng-repeat="subtask in task.subTasks" is-open="subtask.open">
+                  <accordion-group ng-repeat="subtask in task.subtasks" is-open="subtask.open">
                     <accordion-heading>
                       <div class="container-fluid">
                         <div class="row">
-                          <div class="col-md-12">
+                          <div class="col-md-11">
                             <i class="glyphicon pointer icon-open-close" ng-class="{'glyphicon-chevron-down': subtask.open, 'glyphicon-chevron-right': !subtask.open}"></i>
                             <input ng-model="subtask.name" class="form-control" placeholder="Subtask name" ng-click="$event.stopPropagation()">
                           </div>
+                          <div class="col-md-1"><span class="glyphicon glyphicon-remove pointer pull-right" ng-click="task.removeSubtask(subtask)"></span></div>
                         </div>
                       </div>
                     </accordion-heading>
@@ -175,6 +177,9 @@
                                   <label for="materialName">Material</label>
                                   <input ng-model="material.name" class="form-control" id="materialName" placeholder="Material">
                                 </div>
+                                <div class="form-group">
+                                  <span class="glyphicon glyphicon-remove pointer pull-right" ng-click="subtask.removeMaterial(material)"></span>
+                                </div>
                               </dd>
                             </dl>
                           </div>
@@ -198,11 +203,11 @@
 
             <div class="clearfix"></div>
             <div class="form-group">
-              <label for="startDate">Start date</label>
+              <label for="startDate-{{$index}}">Start date</label>
               <p class="input-group">
-                <input ng-model="findJobCopy(job).startDate" type="text" id="startDate" class="form-control" datepicker-popup="{{datePickerFormat}}" datepicker-options="dateOptions" is-open="datePickerOpen" min-date="'2015-01-01'" max-date="'2020-06-22'" ng-required="true" close-text="Close" />
+                <input ng-model="findJobCopy(job).startDate" type="text" id="startDate-{{$index}}" class="form-control" datepicker-popup="{{datePickerFormat}}" datepicker-options="dateOptions" is-open="datePickerOpen[$index]" min-date="'2015-01-01'" max-date="'2020-06-22'" ng-required="true" close-text="Close" />
               <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="openDatePicker()"><i class="glyphicon glyphicon-calendar"></i></button>
+                <button type="button" class="btn btn-default" ng-click="openDatePicker($index)"><i class="glyphicon glyphicon-calendar"></i></button>
               </span>
               </p>
             </div>

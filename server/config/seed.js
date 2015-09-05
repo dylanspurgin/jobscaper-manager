@@ -30,7 +30,7 @@ Organization.find({}).remove(function() {
           {
             name: 'Concrete Walkway',
             description: 'Approximately 8 4\'x2\' concrete pavers from front door to front gate.',
-            subTasks: [
+            subtasks: [
               {
                 name: 'Grading',
                 description: 'grade the area where pavers will go',

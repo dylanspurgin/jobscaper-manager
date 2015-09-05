@@ -6,7 +6,7 @@ angular.module('jobscaperManagerApp')
     var
       _endpoint = 'api/organizations';
 
-    var _subTaskMixins = {
+    var _subtaskMixins = {
       addMaterial: function () {
         var newMaterial = {
           name: '',
@@ -14,20 +14,33 @@ angular.module('jobscaperManagerApp')
         };
         this.materials.unshift(newMaterial);
         return newMaterial;
+      },
+      removeMaterial: function (material) {
+        _.remove(this.materials, material);
+        return material;
       }
     };
 
     var _taskMixins = {
-      addSubTask: function () {
-        var newSubTask = {
+      addSubtask: function () {
+        var newSubtask = {
           name: '',
           description: '',
           complete: false,
           materials: []
         };
-        _.mixin(newSubTask,_subTaskMixins);
-        this.subTasks.unshift(newSubTask);
-        return newSubTask;
+        _.mixin(newSubtask,_subtaskMixins);
+        this.subtasks.unshift(newSubtask);
+        return newSubtask;
+      },
+      /**
+       * Remove a subtask from the array of tasks
+       * @param subtask
+       * @returns {Object} Returns the removed subtask.
+       */
+      removeSubtask: function (subtask) {
+        _.remove(this.subtasks, subtask);
+        return subtask;
       }
     };
 
@@ -36,11 +49,20 @@ angular.module('jobscaperManagerApp')
         var newTask = {
           name:'',
           description:'',
-          subTasks: []
+          subtasks: []
         };
         _.mixin(newTask,_taskMixins);
         this.tasks.unshift(newTask);
         return newTask;
+      },
+      /**
+       * Remove a task from the array of tasks
+       * @param task
+       * @returns {Object} Returns the removed task.
+       */
+      removeTask: function (task) {
+        _.remove(this.tasks, task);
+        return task;
       }
     };
 
@@ -84,8 +106,8 @@ angular.module('jobscaperManagerApp')
               _.mixin(job,_jobMixins);
               _.each(job.tasks, function (task) {
                 _.mixin(task,_taskMixins);
-                _.each(task.subTasks, function (subTask) {
-                  _.mixin(subTask,_subTaskMixins);
+                _.each(task.subtasks, function (subtask) {
+                  _.mixin(subtask,_subtaskMixins);
                 })
               });
             });

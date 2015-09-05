@@ -91,6 +91,7 @@ angular.module('jobscaperManagerApp', [
   })
 
   .factory('authInterceptor', function ($rootScope, $q, $cookieStore, $location, $log) {
+    var path = $location.path();
     return {
       // Add authorization token to headers
       request: function (config) {
@@ -103,11 +104,13 @@ angular.module('jobscaperManagerApp', [
 
       // Intercept 401s and redirect you to login
       responseError: function (response) {
-        if (response.status === 401) {
+        if (response.status === 401 &&
+            path !== '/signup' &&
+            path !== '/login') {
           $log.info('401 response received. Going to login state.');
-          $location.path('/login');
           // remove any stale tokens
           $cookieStore.remove('token');
+          $location.path('/login');
           return $q.reject(response);
         }
         else {

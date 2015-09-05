@@ -36,9 +36,9 @@ angular.module('jobscaperManagerApp')
           })
           .catch(function (err) {
             this.logout();
+            err.message = 'Invalid username and password.';
             deferred.reject(err);
-            return cb(err);
-          });
+          }.bind(this));
         return deferred.promise;
       },
 

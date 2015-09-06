@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('jobscaperManagerApp')
-  .factory('Auth', function Auth($location, $rootScope, $http, User, $cookieStore, $q, Restangular) {
+  .factory('Auth', function Auth($location, $rootScope, $http, User, $cookieStore, $q, Restangular, $window) {
 
     var _currentUser = {},
       _loginEndpoint = '/auth/local';
@@ -49,7 +49,7 @@ angular.module('jobscaperManagerApp')
        */
       logout: function () {
         $cookieStore.remove('token');
-        _currentUser.length = 0;
+        $window.location.reload(); // Reload app to clear out previous user data
       },
 
       /**

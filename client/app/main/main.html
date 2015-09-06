@@ -1,7 +1,7 @@
 <div class="navbar navbar-default navbar-static-top">
   <div class="container">
     <div class="navbar-header">
-      <button class="navbar-toggle" type="button" ng-click="isCollapsed = !isCollapsed">
+      <button class="navbar-toggle" type="button" ng-click="headerMenuIsCollapsed = !headerMenuIsCollapsed">
         <span class="sr-only">Toggle navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -10,23 +10,23 @@
       <div class="navbar-icon-jobscaper"><span class="glyphicon glyphicon-ok icon-jobscaper"></span></div>
       <a href="/" class="navbar-brand">{{organization.name}}</a>
     </div>
-    <div collapse="isCollapsed" class="navbar-collapse collapse" id="navbar-main">
-      <ul class="nav navbar-nav">
+    <div collapse="headerMenuIsCollapsed" class="navbar-collapse collapse" id="navbar-main">
+
+      <ul class="nav navbar-nav" ng-show="isLoggedIn()">
         <li ng-class="{active: isActive('app.jobs')}">
           <a ui-sref="app.jobs">Home</a>
         </li>
         <li ng-show="isManager()" ng-class="{active: isActive('app.manage')}">
           <a ui-sref="app.manage">Manage</a>
         </li>
-        <li ng-show="isAdmin()" ng-class="{active: isActive('app.admin')}"><a ui-sref="app.admin">Admin</a></li>
       </ul>
 
       <ul class="nav navbar-nav navbar-right">
-        <li ng-hide="isLoggedIn()" ng-class="{active: isActive('signup')}"><a ui-sref="app.signup">Sign up</a></li>
-        <li ng-hide="isLoggedIn()" ng-class="{active: isActive('login')}"><a ui-sref="app.login">Login</a></li>
+        <li ng-hide="isLoggedIn()" ng-class="{active: isActive('app.signup')}"><a ui-sref="app.signup">Sign up</a></li>
+        <li ng-hide="isLoggedIn()" ng-class="{active: isActive('app.login')}"><a ui-sref="app.login">Login</a></li>
         <li ng-show="isLoggedIn()"><p class="navbar-text">Hello {{ currentUser.name }}</p> </li>
-        <li ng-show="isLoggedIn()" ng-class="{active: isActive('settings')}"><a ui-sref="app.settings"><span class="glyphicon glyphicon-cog"></span></a></li>
-        <li ng-show="isLoggedIn()" ng-class="{active: isActive('logout')}"><a href="" ng-click="logout()">Logout</a></li>
+        <li ng-show="isLoggedIn()" ng-class="{active: isActive('app.settings')}"><a ui-sref="app.settings"><span class="glyphicon glyphicon-cog"></span></a></li>
+        <li ng-show="isLoggedIn()" ng-class="{active: isActive('app.logout')}"><a href="" ng-click="logout()">Logout</a></li>
       </ul>
     </div>
   </div>

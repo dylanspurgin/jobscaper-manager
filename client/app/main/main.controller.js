@@ -3,13 +3,7 @@
 angular.module('jobscaperManagerApp')
   .controller('MainController', function ($scope, $rootScope, $location, socket, Auth, DataService, $state, $log) {
 
-    $scope.menu = [];
-
-    $scope.isCollapsed = true;
-    $scope.isLoggedIn = Auth.isLoggedIn;
-    $scope.isAdmin = Auth.isAdmin;
-    $scope.isManager = Auth.isManager;
-    $scope.currentUser = Auth.currentUser;
+    $scope.headerMenuIsCollapsed = true; // Should the hamburger menu be open or closed to start (only active on small screens)
 
     var fetchData = function () {
       if (Auth.isLoggedIn() && _.has($scope.currentUser, 'organization')) {
@@ -25,9 +19,18 @@ angular.module('jobscaperManagerApp')
     };
 
 
+    $scope.currentUser = Auth.currentUser;
+
+    $scope.isLoggedIn = function () {
+      return Auth.isLoggedIn();
+    };
+
+    $scope.isManager = function () {
+      return Auth.isManager() || Auth.isAdmin();
+    };
+
     $scope.logout = function () {
       Auth.logout();
-      $state.go('app.login');
     };
 
     $scope.isActive = function (state) {

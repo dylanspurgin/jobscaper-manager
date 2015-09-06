@@ -100,7 +100,7 @@ exports.update = function (req, res) {
       return res.status(404).send('Not Found');
     }
     // Validate users attempting to gain access to a new org
-    if (user.organization.toString() !== req.body.organization) {
+    if (user.organization && user.organization.toString() !== req.body.organization) {
       if (!user.organizationRequestCode) {
         return res.status(400).send('Bad request. No organization request code found.');
       }

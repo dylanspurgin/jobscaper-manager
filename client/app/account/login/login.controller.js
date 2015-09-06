@@ -23,7 +23,8 @@ angular.module('jobscaperManagerApp')
       }
     };
 
-    $scope.loginOauth = function (provider) {
-      $window.location.href = '/auth/' + provider;
-    };
+    // Used for 3rd party (google, facebook, etc) auth
+    //$scope.loginOauth = function (provider) {
+    //  $window.location.href = '/auth/' + provider;
+    //};
   });

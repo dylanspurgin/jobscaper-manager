@@ -16,6 +16,7 @@ var path = require('path');
 var config = require('./environment');
 var passport = require('passport');
 var session = require('express-session');
+var cors = require('cors');
 
 module.exports = function(app) {
   var env = app.get('env');
@@ -30,6 +31,7 @@ module.exports = function(app) {
   app.use(bodyParser.json());
   app.use(methodOverride());
   app.use(cookieParser());
+  app.use(cors());
   //app.use(session({ secret: 'broscaper', cookie: { maxAge: 60000 }}));
   app.use(passport.initialize());
   if ('production' === env) {
